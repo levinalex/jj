@@ -55,7 +55,7 @@ func TestObjectsAndLists(t *testing.T) {
 
 func TestTypes(t *testing.T) {
 	var err error
-	var data *Value
+	var data Value
 
 	err = json.Unmarshal([]byte(`{}`), &data)
 	assert.Nil(t, err)

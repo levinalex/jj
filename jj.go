@@ -59,12 +59,14 @@ func (v *Value) Type() Type {
 		return Number
 	case bool:
 		return Bool
+	case nil:
+		return Null
 	case map[string]interface{}:
 		return Object
 	case []interface{}:
 		return List
 	default:
-		panic("unknown type")
+		panic(fmt.Errorf("jj: unknown type %#v", v.data))
 	}
 }
 
