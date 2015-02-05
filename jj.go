@@ -3,6 +3,7 @@ package jj
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 type Value struct {
@@ -195,6 +196,18 @@ func (v *Value) List() []*Value {
 		panic(err)
 	}
 	return val
+}
+
+func (v *Value) KeysSorted() []string {
+	m := v.Map()
+	res := make([]string, len(m))
+	i := 0
+	for k, _ := range m {
+		res[i] = k
+		i++
+	}
+	sort.Strings(res)
+	return res
 }
 
 func (v *Value) UnmarshalJSON(b []byte) error {

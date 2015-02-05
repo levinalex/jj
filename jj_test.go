@@ -21,6 +21,8 @@ func TestDeserialize(t *testing.T) {
 
 	assert.Equal(t, 4, data.At("bar", "int").Number())
 
+	assert.Equal(t, []string{"bar", "baz", "foo"}, data.KeysSorted())
+
 	str = `{ "foo": [1,2,"bar",{ "baz": "fred" }]}`
 	err = json.Unmarshal([]byte(str), &data)
 	assert.Nil(t, err)
@@ -31,6 +33,7 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, 2, data.At("foo", 1).Number())
 
 	assert.Equal(t, "", data.At("missing").StringOrDefault(""))
+
 }
 
 func TestObjectsAndLists(t *testing.T) {
