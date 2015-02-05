@@ -20,9 +20,8 @@ const (
 	List   = iota
 )
 
-func getValueAtPath(o *Value, keys ...interface{}) (*Value, error) {
-	obj := o
-
+func (v *Value) AtOrError(keys ...interface{}) (*Value, error) {
+	obj := v
 	for _, key := range keys {
 		switch key := key.(type) {
 		case string:
@@ -45,12 +44,8 @@ func getValueAtPath(o *Value, keys ...interface{}) (*Value, error) {
 }
 
 func (v *Value) At(keys ...interface{}) *Value {
-	val, _ := getValueAtPath(v, keys...)
-	if val == nil {
-		return nil
-	} else {
-		return val
-	}
+	val, _ := v.AtOrError(keys...)
+	return val
 }
 
 func (v *Value) Type() Type {
