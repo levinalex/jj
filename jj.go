@@ -38,7 +38,7 @@ func (v *Value) AtOrError(keys ...interface{}) (*Value, error) {
 			}
 			obj = lst[key]
 		default:
-			panic(fmt.Sprintf("jj: key %#v is neither int nor string", key))
+			panic(fmt.Sprintf("jj: key must be int or string, was %T", key))
 		}
 	}
 	return obj, nil
@@ -67,7 +67,7 @@ func (v *Value) Type() Type {
 	case []interface{}:
 		return List
 	default:
-		panic(fmt.Errorf("jj: unknown type %#v", v.data))
+		panic(fmt.Errorf("jj: unknown type %T", v.data))
 	}
 }
 
