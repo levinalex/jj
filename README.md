@@ -8,9 +8,12 @@ tiny library that makes dealing with JSON structure assertions in Go a little bi
 
 ```go
 var data jj.Value
-str := `{ "foo": "bar", "baz": 3, "bar": { "sub": "val", "int": 4 }}`
+str := `{ "foo": "bar", "bar": { "sub": "val", "int": 4 }, "baz": ["a", 9] }`
 err := json.Unmarshal([]byte(str), &data)
 
-assert.Equal(t, "val", data.At("bar", "sub").String())
+assert.Equal(t, "val",     data.At("bar", "sub").String())          // panics if the key does not exist
+assert.Equal(t, "default", data.At("x").StringOrDefault("default")) // always succeeds
+
+assert.Equal(t, 9,         data.At("baz", 1).Number())
 ```
 
