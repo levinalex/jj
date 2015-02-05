@@ -11,9 +11,14 @@ var data jj.Value
 str := `{ "foo": "bar", "bar": { "sub": "val", "int": 4 }, "baz": ["a", 9] }`
 err := json.Unmarshal([]byte(str), &data)
 
-assert.Equal(t, "val",     data.At("bar", "sub").String())          // panics if the key does not exist
-assert.Equal(t, "default", data.At("x").StringOrDefault("default")) // always succeeds
+fmt.Println(data.At("bar", "sub").String()) // panics if the key does not exist
+// => "val"
 
-assert.Equal(t, 9,         data.At("baz", 1).Number())
+fmt.Println(data.At("x").StringOrDefault("default")) // always succeeds
+// => "default"
+
+fmt.Println(data.At("baz", 1).Number())
+// => 9
+
 ```
 
