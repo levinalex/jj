@@ -31,6 +31,26 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, 2, data.At("foo", 1).Number())
 }
 
+func TestObjectsAndLists(t *testing.T) {
+	var err error
+	var data *Value
+	var str string
+
+	str = `{ "foo": "bar", "baz": 4 }`
+	err = json.Unmarshal([]byte(str), &data)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "bar", data.Map()["foo"].String())
+	assert.Equal(t, 4, data.Map()["baz"].Number())
+
+	str = `["foo", "bar", 1, 2]`
+	err = json.Unmarshal([]byte(str), &data)
+	assert.Nil(t, err)
+
+	assert.Equal(t, "bar", data.List()[1].String())
+	assert.Equal(t, 2, data.List()[3].Number())
+}
+
 func TestTypes(t *testing.T) {
 	var err error
 	var data *Value
@@ -52,6 +72,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsString())
 	assert.False(t, data.IsNull())
 	assert.False(t, data.IsList())
+	assert.Equal(t, 12, data.Number())
 
 	err = json.Unmarshal([]byte(`"foo"`), &data)
 	assert.Nil(t, err)
@@ -61,6 +82,7 @@ func TestTypes(t *testing.T) {
 	assert.True(t, data.IsString())
 	assert.False(t, data.IsNull())
 	assert.False(t, data.IsList())
+	assert.Equal(t, "foo", data.String())
 
 	err = json.Unmarshal([]byte(`null`), &data)
 	assert.Nil(t, err)

@@ -68,7 +68,6 @@ func (v *Value) Type() Type {
 		return List
 	default:
 		panic("unknown type")
-
 	}
 }
 
@@ -108,6 +107,31 @@ func (v *Value) Number() int64 {
 	} else {
 		panic(v.data)
 	}
+}
+
+func (v *Value) Map() map[string]*Value {
+	m, ok := v.data.(map[string]interface{})
+	if !ok {
+		panic("unexpected type")
+	}
+
+	res := make(map[string]*Value, len(m))
+	for key, val := range m {
+		res[key] = &Value{val}
+	}
+	return res
+}
+
+func (v *Value) List() []*Value {
+	m, ok := v.data.([]interface{})
+	if !ok {
+		panic("unexpected type")
+	}
+	res := make([]*Value, len(m))
+	for i, val := range m {
+		res[i] = &Value{val}
+	}
+	return res
 }
 
 func (v *Value) UnmarshalJSON(b []byte) error {
