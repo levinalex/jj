@@ -73,6 +73,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsNull())
 	assert.False(t, data.IsList())
 	assert.Equal(t, 12, data.Number())
+	assert.Equal(t, 12, data.NumberOrDefault(102))
 
 	err = json.Unmarshal([]byte(`"foo"`), &data)
 	assert.Nil(t, err)
@@ -83,6 +84,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsNull())
 	assert.False(t, data.IsList())
 	assert.Equal(t, "foo", data.String())
+	assert.Equal(t, "foo", data.StringOrDefault("bar"))
 
 	err = json.Unmarshal([]byte(`null`), &data)
 	assert.Nil(t, err)
@@ -101,6 +103,16 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsString())
 	assert.False(t, data.IsNull())
 	assert.True(t, data.IsList())
+
+	err = json.Unmarshal([]byte(`true`), &data)
+	assert.Nil(t, err)
+
+	assert.False(t, data.IsNumber())
+	assert.False(t, data.IsObject())
+	assert.False(t, data.IsString())
+	assert.False(t, data.IsNull())
+	assert.False(t, data.IsList())
+	assert.True(t, data.IsBool())
 
 	var dataNil *Value
 	assert.False(t, dataNil.IsNumber())

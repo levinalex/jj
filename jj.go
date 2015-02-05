@@ -15,6 +15,7 @@ const (
 	Null   = iota
 	Number = iota
 	String = iota
+	Bool   = iota
 	Object = iota
 	List   = iota
 )
@@ -62,6 +63,8 @@ func (v *Value) Type() Type {
 		return String
 	case float64:
 		return Number
+	case bool:
+		return Bool
 	case map[string]interface{}:
 		return Object
 	case []interface{}:
@@ -91,28 +94,64 @@ func (v *Value) IsList() bool {
 	return v.Type() == List
 }
 
-func (v *Value) String() string {
-	d, ok := v.data.(string)
+func (v *Value) IsBool() bool {
+	return v.Type() == Bool
+}
+
+func (v *Value) StringOrError() (string, error) {
+	val, ok := v.data.(string)
 	if ok {
-		return d
+		return val, nil
 	} else {
-		panic(v.data)
+		return "", fmt.Errorf("jj: object is not a string")
+	}
+
+}
+func (v *Value) String() string {
+	val, err := v.StringOrError()
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+func (v *Value) StringOrDefault(d string) string {
+	val, err := v.StringOrError()
+	if err != nil {
+		return d
+	}
+	return val
+}
+
+func (v *Value) NumberOrError() (int64, error) {
+	d, ok := v.data.(float64)
+	if ok {
+		return int64(d), nil
+	} else {
+		return 0, fmt.Errorf("jj: object is not a number")
 	}
 }
 
 func (v *Value) Number() int64 {
-	d, ok := v.data.(float64)
-	if ok {
-		return int64(d)
-	} else {
-		panic(v.data)
+	val, err := v.NumberOrError()
+	if err != nil {
+		panic(err)
 	}
+	return val
+}
+
+func (v *Value) NumberOrDefault(d int64) int64 {
+	val, err := v.NumberOrError()
+	if err != nil {
+		return d
+	}
+	return val
 }
 
 func (v *Value) Map() map[string]*Value {
 	m, ok := v.data.(map[string]interface{})
 	if !ok {
-		panic("unexpected type")
+		panic("jj: object is not a map")
 	}
 
 	res := make(map[string]*Value, len(m))
@@ -125,7 +164,7 @@ func (v *Value) Map() map[string]*Value {
 func (v *Value) List() []*Value {
 	m, ok := v.data.([]interface{})
 	if !ok {
-		panic("unexpected type")
+		panic("jj: object is not a list")
 	}
 	res := make([]*Value, len(m))
 	for i, val := range m {
