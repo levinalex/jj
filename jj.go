@@ -20,37 +20,36 @@ const (
 	List   = iota
 )
 
-func getValueAtPath(o interface{}, keys ...interface{}) (interface{}, error) {
+func getValueAtPath(o *Value, keys ...interface{}) (*Value, error) {
 	obj := o
 
 	for _, key := range keys {
-
 		switch key := key.(type) {
 		case string:
-			h, ok := obj.(map[string]interface{})
-			if !ok {
-				return nil, fmt.Errorf("jsvalue: cannot treat %v as a map", obj)
+			h, err := obj.MapOrError()
+			if err != nil {
+				return nil, err
 			}
 			obj = h[key]
 		case int:
-			lst, ok := obj.([]interface{})
-			if !ok {
-				return nil, fmt.Errorf("jsvalue: cannot treat %v as a list", obj)
+			lst, err := obj.ListOrError()
+			if err != nil {
+				return nil, err
 			}
 			obj = lst[key]
 		default:
-			panic(fmt.Sprintf("jsvalue: key %#v is neither int nor string", key))
+			panic(fmt.Sprintf("jj: key %#v is neither int nor string", key))
 		}
 	}
 	return obj, nil
 }
 
 func (v *Value) At(keys ...interface{}) *Value {
-	val, _ := getValueAtPath(v.data, keys...)
+	val, _ := getValueAtPath(v, keys...)
 	if val == nil {
 		return nil
 	} else {
-		return &Value{val}
+		return val
 	}
 }
 
@@ -99,6 +98,9 @@ func (v *Value) IsBool() bool {
 }
 
 func (v *Value) StringOrError() (string, error) {
+	if v == nil {
+		return "", fmt.Errorf("jj: no such key")
+	}
 	val, ok := v.data.(string)
 	if ok {
 		return val, nil
@@ -124,6 +126,9 @@ func (v *Value) StringOrDefault(d string) string {
 }
 
 func (v *Value) NumberOrError() (int64, error) {
+	if v == nil {
+		return 0, fmt.Errorf("jj: no such key")
+	}
 	d, ok := v.data.(float64)
 	if ok {
 		return int64(d), nil
@@ -148,29 +153,51 @@ func (v *Value) NumberOrDefault(d int64) int64 {
 	return val
 }
 
-func (v *Value) Map() map[string]*Value {
+func (v *Value) MapOrError() (map[string]*Value, error) {
+	if v == nil {
+		return nil, fmt.Errorf("jj: no such key")
+	}
 	m, ok := v.data.(map[string]interface{})
+	res := make(map[string]*Value, len(m))
 	if !ok {
-		panic("jj: object is not a map")
+		return res, fmt.Errorf("jj: object is not a map")
 	}
 
-	res := make(map[string]*Value, len(m))
 	for key, val := range m {
 		res[key] = &Value{val}
 	}
-	return res
+	return res, nil
 }
 
-func (v *Value) List() []*Value {
-	m, ok := v.data.([]interface{})
-	if !ok {
-		panic("jj: object is not a list")
+func (v *Value) Map() map[string]*Value {
+	val, err := v.MapOrError()
+	if err != nil {
+		panic(err)
 	}
+	return val
+}
+
+func (v *Value) ListOrError() ([]*Value, error) {
+	if v == nil {
+		return nil, fmt.Errorf("jj: no such key")
+	}
+	m, ok := v.data.([]interface{})
 	res := make([]*Value, len(m))
+	if !ok {
+		return res, fmt.Errorf("jj: object is not a list")
+	}
 	for i, val := range m {
 		res[i] = &Value{val}
 	}
-	return res
+	return res, nil
+}
+
+func (v *Value) List() []*Value {
+	val, err := v.ListOrError()
+	if err != nil {
+		panic(err)
+	}
+	return val
 }
 
 func (v *Value) UnmarshalJSON(b []byte) error {

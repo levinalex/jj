@@ -29,6 +29,8 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, "fred", data.At("foo", 3, "baz").String())
 	assert.Equal(t, 1, data.At("foo", 0).Number())
 	assert.Equal(t, 2, data.At("foo", 1).Number())
+
+	assert.Equal(t, "", data.At("missing").StringOrDefault(""))
 }
 
 func TestObjectsAndLists(t *testing.T) {
