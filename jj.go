@@ -213,3 +213,7 @@ func (v *Value) KeysSorted() []string {
 func (v *Value) UnmarshalJSON(b []byte) error {
 	return json.Unmarshal(b, &v.data)
 }
+
+func (v Value) MarshalJSON() ([]byte, error) {
+	return json.Marshal(v.data)
+}

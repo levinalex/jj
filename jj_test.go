@@ -33,7 +33,22 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, 2, data.At("foo", 1).Number())
 
 	assert.Equal(t, "", data.At("missing").StringOrDefault(""))
+}
 
+func TestSerialize(t *testing.T) {
+	var data Value
+	var err error
+	var str string
+	var text []byte
+
+	str = `{"bar":{"int":4,"sub":"val"},"baz":3,"foo":"bar"}`
+	err = json.Unmarshal([]byte(str), &data)
+	assert.Nil(t, err)
+
+	text, err = json.Marshal(data)
+	assert.Nil(t, err)
+
+	assert.Equal(t, str, string(text))
 }
 
 func TestObjectsAndLists(t *testing.T) {
