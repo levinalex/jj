@@ -36,6 +36,17 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, 2, data.At("foo", 1).Number())
 
 	assert.Equal(t, "", data.At("missing").StringOrDefault(""))
+
+	assert.Panics(t, func() {
+		data.AtOrError(nil)
+	}, "calling AtOrError with something that is neither string not int should panic")
+
+	assert.Nil(t, data.At(4))
+	assert.Nil(t, data.At("foo", "bar"))
+	assert.Nil(t, data.At("doesnotexist").At("bar"))
+	assert.Nil(t, data.At(1000))
+	assert.Nil(t, data.At(1000).At(1000, 1000))
+	assert.Nil(t, data.At("foo", "bar", "baz", "fred"))
 }
 
 func TestSerialize(t *testing.T) {
@@ -97,6 +108,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsList())
 	assert.Equal(t, 12, data.Number())
 	assert.Equal(t, 12, data.NumberOrDefault(102))
+	assert.Equal(t, 102, data.At("doesnotexist").NumberOrDefault(102))
 
 	err = json.Unmarshal([]byte(`"foo"`), &data)
 	assert.Nil(t, err)
@@ -108,6 +120,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsList())
 	assert.Equal(t, "foo", data.String())
 	assert.Equal(t, "foo", data.StringOrDefault("bar"))
+	assert.Equal(t, 102, data.NumberOrDefault(102))
 
 	err = json.Unmarshal([]byte(`null`), &data)
 	assert.Nil(t, err)
