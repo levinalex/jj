@@ -20,6 +20,7 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, "val", data.At("bar").At("sub").String())
 
 	assert.Equal(t, 4, data.At("bar", "int").Number())
+	assert.Equal(t, 4, data.At("bar", "int").Value())
 
 	assert.Equal(t, []string{"bar", "baz", "foo"}, data.KeysSorted())
 
@@ -29,6 +30,8 @@ func TestDeserialize(t *testing.T) {
 
 	assert.Equal(t, "bar", data.At("foo", 2).String())
 	assert.Equal(t, "fred", data.At("foo", 3, "baz").String())
+	assert.Equal(t, "fred", data.At("foo", 3, "baz").Value())
+
 	assert.Equal(t, 1, data.At("foo", 0).Number())
 	assert.Equal(t, 2, data.At("foo", 1).Number())
 

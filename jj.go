@@ -49,6 +49,13 @@ func (v *Value) At(keys ...interface{}) *Value {
 	return val
 }
 
+func (v *Value) Value() interface{} {
+	if v == nil {
+		return nil
+	}
+	return v.data
+}
+
 func (v *Value) Type() Type {
 	if v == nil {
 		return Null
