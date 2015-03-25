@@ -130,6 +130,10 @@ func (v *Value) StringOrDefault(d string) string {
 	return val
 }
 
+func (v *Value) MustString() string {
+	return v.StringOrDefault("")
+}
+
 func (v *Value) NumberOrError() (int64, error) {
 	if v == nil {
 		return 0, fmt.Errorf("jj: no such key")
