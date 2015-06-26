@@ -19,8 +19,8 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, "val", data.At("bar", "sub").String())
 	assert.Equal(t, "val", data.At("bar").At("sub").String())
 
-	assert.Equal(t, 4, data.At("bar", "int").Number())
-	assert.Equal(t, 4, data.At("bar", "int").Value())
+	assert.EqualValues(t, 4, data.At("bar", "int").Int())
+	assert.EqualValues(t, 4, data.At("bar", "int").Value())
 
 	assert.Equal(t, []string{"bar", "baz", "foo"}, data.KeysSorted())
 
@@ -32,8 +32,8 @@ func TestDeserialize(t *testing.T) {
 	assert.Equal(t, "fred", data.At("foo", 3, "baz").String())
 	assert.Equal(t, "fred", data.At("foo", 3, "baz").Value())
 
-	assert.Equal(t, 1, data.At("foo", 0).Number())
-	assert.Equal(t, 2, data.At("foo", 1).Number())
+	assert.EqualValues(t, 1, data.At("foo", 0).Number())
+	assert.EqualValues(t, 2, data.At("foo", 1).Number())
 
 	assert.Equal(t, "", data.At("missing").StringOrDefault(""))
 
@@ -75,14 +75,15 @@ func TestObjectsAndLists(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, "bar", data.Map()["foo"].String())
-	assert.Equal(t, 4, data.Map()["baz"].Number())
+	assert.Equal(t, int64(4), data.Map()["baz"].Number())
 
 	str = `["foo", "bar", 1, 2]`
 	err = json.Unmarshal([]byte(str), &data)
 	assert.Nil(t, err)
 
 	assert.Equal(t, "bar", data.List()[1].String())
-	assert.Equal(t, 2, data.List()[3].Number())
+	assert.Equal(t, int64(2), data.List()[3].Number())
+	assert.Equal(t, 2, data.List()[3].Int())
 }
 
 func TestTypes(t *testing.T) {
@@ -106,9 +107,9 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsString())
 	assert.False(t, data.IsNull())
 	assert.False(t, data.IsList())
-	assert.Equal(t, 12, data.Number())
-	assert.Equal(t, 12, data.NumberOrDefault(102))
-	assert.Equal(t, 102, data.At("doesnotexist").NumberOrDefault(102))
+	assert.Equal(t, int64(12), data.Number())
+	assert.Equal(t, int64(12), data.NumberOrDefault(102))
+	assert.Equal(t, int64(102), data.At("doesnotexist").NumberOrDefault(102))
 
 	err = json.Unmarshal([]byte(`"foo"`), &data)
 	assert.Nil(t, err)
@@ -120,7 +121,7 @@ func TestTypes(t *testing.T) {
 	assert.False(t, data.IsList())
 	assert.Equal(t, "foo", data.String())
 	assert.Equal(t, "foo", data.StringOrDefault("bar"))
-	assert.Equal(t, 102, data.NumberOrDefault(102))
+	assert.Equal(t, int64(102), data.NumberOrDefault(102))
 
 	err = json.Unmarshal([]byte(`null`), &data)
 	assert.Nil(t, err)

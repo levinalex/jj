@@ -146,6 +146,10 @@ func (v *Value) NumberOrError() (int64, error) {
 	}
 }
 
+func (v *Value) Int() int {
+	return int(v.Number())
+}
+
 func (v *Value) Number() int64 {
 	val, err := v.NumberOrError()
 	if err != nil {
